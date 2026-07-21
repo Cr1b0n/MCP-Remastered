@@ -1,0 +1,11 @@
+# Generated version workspaces (created by bin/create.js)
+[0-9]*/
+
+# Downloaded tooling cache
+.tools/
+
+# npm dependencies
+node_modules/
+
+# Build logs
+logs/
