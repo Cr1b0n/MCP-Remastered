@@ -24,6 +24,17 @@ fuzzy-search/select a version, and runs the full pipeline:
 - Writes `metadata.json`, `build.js`, `properties.js`, and `app.js`
 - Each version workspace is fully independent
 
+## Tested
+
+Tested on the following Minecraft versions:
+
+- 1.14.4 (client)
+- 1.20.1 (client)
+- 1.20.1 (server, do not work yet, pls dont use --server and only use it if you are really trying to fix it.)
+
+Only tested on Linux (Crostini / Chromebook). haven't been tested on macOS or Windows.
+
+
 **Inside a version folder** (`cd <version>/`), `node app.js` gives you:
 
 | Flag | Description |
