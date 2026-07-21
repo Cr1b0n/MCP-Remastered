@@ -78,7 +78,7 @@ recompiled. This makes repeated build cycles fast -- edit a file, run
 ## Install
 
 ```bash
-git clone <repo> MCP-Remastered
+git clone https://github.com/Cr1b0n/MCP-Remastered.git
 cd MCP-Remastered
 npm install
 node bin/create.js
