@@ -1,6 +1,6 @@
 # MCP-Remastered
 
-![PREVIEW](images/PREVIEW.png)
+![PREVIEW](images/1.3.png)
 
 A modern Minecraft decompilation workspace manager. Pick any version from
 Mojang's version list that has official mappings (1.14.4+), and it
