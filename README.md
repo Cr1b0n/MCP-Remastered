@@ -2,141 +2,50 @@
 
 ![PREVIEW](images/1.3.png)
 
-A modern Minecraft decompilation workspace manager. Pick any version from
-Mojang's version list that has official mappings (1.14.4+), and it
-downloads, deobfuscates, and decompiles it into editable Java source,
-then generates a per-version CLI scaffold to build and run.
+A Minecraft client & server decompiler pack. Downloads vanilla Minecraft jars and runs the decompiler pipeline to produce clean, decompiled source trees.
 
-Created by Cr1b0n & saad2001.
+```bash
+npm start           # interactive menu
+npm run create      # new workspace wizard
+npm run doctor      # system diagnostic
+npm run list        # list all workspaces
+```
 
-## How it works
+## Features
 
-**`node bin/create.js`** fetches Mojang's live version manifest, lets you
-fuzzy-search/select a version, and runs the full pipeline:
-
-- Downloads the official client jar
-- Downloads Mojang's official mappings (published for 1.14.4 and later)
-- Downloads shared tooling into `.tools/` (cached across versions):
-  - **ForgeAutoRenamingTool** -- deobfuscates using Mojang's mappings
-  - **Vineflower** -- decompiles the deobfuscated jar to Java source
-- Extracts `.java` files into `src/` and resources into `src/resources/`,
-  auto-fixing known decompiler artifacts
-- Writes `metadata.json`, `build.js`, `properties.js`, and `app.js`
-- Each version workspace is fully independent
-
-## Tested
-
-Tested on the following Minecraft versions:
-
-- 1.14.4 (client)
-- 1.20.1 (client)
-- 1.20.1 (server, do not work yet, pls dont use --server and only use it if you are really trying to fix it.)
-
-Only tested on Linux (Crostini / Chromebook). haven't been tested on macOS or Windows.
-
-
-**Inside a version folder** (`cd <version>/`), `node app.js` gives you:
-
-| Flag | Description |
-|------|-------------|
-| `--build` | Package `<version>-remastered.jar` using a hybrid strategy: seeds from the deobfuscated jar (always valid bytecode), then recompiles only changed source files on top |
-| `--run` | Best-effort dev launch of the built jar (sets up offline-mode game args) |
-| `--assets-install` | Download all game assets (objects + index) from Mojang's resources server |
-| `--i-missing-assets` | Install only missing assets (skips cached files) |
-| `--fix` | Re-scan `src/` and auto-fix known decompiler artifacts |
-| `--clean` | Delete `build/` |
-| `--info` | Show version metadata |
-| `--setup` | Interactive wizard to configure project name, JDK, memory, game dir, assets dir |
-| `--gemini` | Interactive Gemini AI assistant for modding help |
-
-### Hybrid build strategy
-
-Rather than attempting a full clean recompile of all decompiled source (which
-nearly always fails due to Vineflower's imperfect output), the build:
-
-1. **Seeds** `build/classes/` by extracting every `.class` file from the
-   deobfuscated jar -- this gives you a complete, working class tree
-2. **Overlays** recompiled source files on top by running `javac` only on
-   files that have changed since the last build
-3. **Packages** everything into a runnable jar
-
-This means `--build` always produces a working jar on the first run, and your
-source edits take effect immediately. Files that fail to compile (due to
-decompiler artifacts) are silently backed by the deobfuscated bytecode.
-
-### Assets
-
-Assets (sounds, textures, language files) are downloaded separately via
-`--assets-install`. They are stored by hash in `assets/objects/` and shared
-across versions when they share the same resource URL. Use `--i-missing-assets`
-to fill in gaps without re-downloading everything.
-
-### Incremental compilation
-
-Only source files whose modification time is newer than `metadata.json` are
-recompiled. This makes repeated build cycles fast -- edit a file, run
-`--build`, and only that file is recompiled.
+- **Workspace management** — create, list, repair, delete decompiled projects
+- **Version manifest** — fetches all release/snapshot/old-beta versions from Mojang
+- **Progress display** — spinners, progress bars, live pipeline status
+- **13 themes** — Dawn, Dusk, Midnight, Forest, Ocean, Lava, Violet, Mono, Sakura, Nord, Solarized, Dracula, OneDark
+- **Settings** — theme picker persists to `bin/settings.json`
+- **Smart terminal layout** — full banner mode on large screens, compact text view on small terminals
+- **No AI, no telemetry** — pure local decompilation
 
 ## Requirements
 
-- **Node.js 18+**
-- **A full JDK 17+ (21 recommended)** -- `javac` must be available for
-  `--build`. The tool detects installed JDKs and lets you pick one per
-  version workspace (e.g., JDK 8 for older versions like 1.14.4).
-- Internet access to `piston-meta.mojang.com`, `maven.minecraftforge.net`,
-  and `repo1.maven.org` (Maven Central).
+- Node.js ≥ 20
+- Java JDK 17+ (for decompilation)
+- Internet connection (version manifest lookup)
 
-## Install
+## Project Structure
 
-```bash
-git clone https://github.com/Cr1b0n/MCP-Remastered.git
-cd MCP-Remastered
-npm install
-node bin/create.js
+```
+bin/menu.js          interactive main menu
+bin/create.js        workspace creation & management
+bin/settings.json    user preferences
+lib/banner.js        gradient ASCII art + header
+lib/mcptui/          TUI components (renderer, theme, prompts, dashboard, loading)
+templates/           server.js & client.js pipeline templates
 ```
 
-## Per-version JDK detection
+## License
 
-MCP-Remastered scans your system for installed JDKs and suggests the best one
-for each Minecraft version. Older versions (1.14.x, 1.15.x) need JDK 8;
-newer versions work with JDK 17+. You can select a different JDK during
-setup, or re-run `node app.js --setup` to change it later.
+GNU GENERAL PUBLIC LICENSE
 
-## Decompiler artifacts
+## Owners
 
-Vineflower occasionally emits patterns that are not valid Java -- for example,
-a diamond operator inside a cast like `(Supplier<>)`, which is only legal in
-`new Foo<>()` context. New workspaces are auto-fixed during extraction. For
-existing workspaces, run `--fix` to clean them up without re-downloading or
-re-decompiling.
+Made by cr1b0n with saad2001's help.
 
-If you encounter a new invalid-syntax pattern that is not caught, it can be
-added to `lib/fixups.js` -- rules are simple regex + replacement pairs.
+### random stuff that no one cares 
 
-## Tool versions
-
-Pinned in `lib/pipeline.js` (`ART_VERSION`, `VINEFLOWER_VERSION`). If a
-download returns 404, the version may need bumping to the latest from:
-
-- https://maven.minecraftforge.net/net/minecraftforge/ForgeAutoRenamingTool/
-- https://repo1.maven.org/maven2/org/vineflower/vineflower/
-
-## Experimental: Server support
-
-Pass `--server` to `bin/create.js` to decompile the Minecraft server instead
-of the client. For example:
-
-```bash
-node bin/create.js --server
-```
-
-This is a work-in-progress and should be considered experimental. The server
-jar format changed to a "bundler" layout in 1.20+ (the real server code is
-nested inside a wrapper jar), and support for this is still being refined.
-Server source is decompiled from the nested jar and the workspace is named
-`<version>-server`. Use `node app.js --server` to launch the dedicated server
-from a server workspace. Many features like `--assets-install` and `--run`
-are not applicable to server workspaces.
-
-Do not rely on server workspaces for production use. This feature is
-temporary and may be reworked or removed.
+**There are so many bugs right now and I dont want to fix them, its like that video I see about "added more bugs to fix later" lmao. but yeah I wont fix them until I really want to update this project cuz its actually pain in the ass, I now start to use opencode becouse I dont really have alot of time latelly, and I am working on a mic project so yeah, see you on youtube I guess**
