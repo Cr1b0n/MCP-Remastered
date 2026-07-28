@@ -1,0 +1,36 @@
+{
+  "name": "mcp-remastered",
+  "version": "1.3.0",
+  "description": "MCP-Remastered - a modern Minecraft decompiler pack. By Cr1b0n & saad2001.",
+  "type": "module",
+  "bin": {
+    "mcp-remastered": "./bin/create.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node bin/menu.js",
+    "create": "node bin/create.js",
+    "doctor": "node bin/create.js --doctor",
+    "list": "node bin/create.js --list",
+    "server": "node bin/create.js --server",
+    "refresh": "node bin/create.js --refresh",
+    "fix": "node bin/fix.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^5.3.8",
+    "@opentui/core": "^0.4.5",
+    "@opentui/keymap": "^0.4.5",
+    "@opentui/solid": "^0.4.5",
+    "adm-zip": "^0.5.14",
+    "ansi-escapes": "^7.3.0",
+    "chalk": "^5.3.0",
+    "execa": "^9.3.0",
+    "figlet": "^1.11.4",
+    "fs-extra": "^11.2.0",
+    "ora": "^8.0.1",
+    "solid-js": "^1.9.12",
+    "yargs": "^17.7.2"
+  }
+}
