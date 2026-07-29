@@ -1,4 +1,4 @@
-# /- MCP-Remastered -\
+# MCP-REMASTERED
 
 ![PREVIEW](images/1.3.png)
 
